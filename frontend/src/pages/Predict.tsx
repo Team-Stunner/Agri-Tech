@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import React, { useState } from 'react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function Predict() {
-  const GEMINI_API_KEY = "AIzaSyDRUX_Dy1rJiJwviR5psPc78k8eZKCfSo8"; // Replace with your API Key
+  const GEMINI_API_KEY = 'AIzaSyDRUX_Dy1rJiJwviR5psPc78k8eZKCfSo8'; // Replace with your API Key
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
   const [image, setImage] = useState(null);
-  const [disease, setDisease] = useState("");
+  const [disease, setDisease] = useState('');
   const [loading, setLoading] = useState(false);
 
   // Function to convert image to base64
@@ -17,7 +17,7 @@ function Predict() {
       reader.onload = () => {
         resolve({
           inlineData: {
-            data: reader.result.split(",")[1], // Extract base64 data
+            data: reader.result.split(',')[1], // Extract base64 data
             mimeType: file.type,
           },
         });
@@ -34,17 +34,18 @@ function Predict() {
 
   const handlePredict = async () => {
     if (!image) {
-      alert("Please upload an image first!");
+      alert('Please upload an image first!');
       return;
     }
 
     setLoading(true);
-    setDisease("");
+    setDisease('');
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
 
-      const prompt = "Identify the disease in the plant and Just give the disease name and crop name as output";
+      const prompt =
+        'Identify the disease in the plant and Just give the disease name and crop name as output';
       const imagePart = await fileToGenerativePart(image); // Convert image to base64
 
       const generatedContent = await model.generateContent([prompt, imagePart]);
@@ -52,8 +53,8 @@ function Predict() {
 
       setDisease(responseText);
     } catch (error) {
-      console.error("Error detecting disease:", error);
-      setDisease("Error detecting disease.");
+      console.error('Error detecting disease:', error);
+      setDisease('Error detecting disease.');
     }
 
     setLoading(false);
@@ -62,7 +63,9 @@ function Predict() {
   return (
     <div className="flex flex-col items-center justify-center  min-h-screen p-4 bg-grey-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-4 text-center">Plant Disease Detection</h2>
+        <h2 className="text-xl font-semibold mb-4 text-center">
+          Plant Disease Detection
+        </h2>
         <input
           type="file"
           accept="image/*"
@@ -70,7 +73,11 @@ function Predict() {
           className="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer p-2 mb-4"
         />
         {image && (
-          <img src={URL.createObjectURL(image)} alt="Uploaded" className="w-full h-auto mb-4 rounded-lg" />
+          <img
+            src={URL.createObjectURL(image)}
+            alt="Uploaded"
+            className="w-full h-auto mb-4 rounded-lg"
+          />
         )}
         <button
           onClick={handlePredict}
@@ -80,10 +87,14 @@ function Predict() {
           {loading ? (
             <span className="animate-spin border-t-2 border-white rounded-full w-5 h-5 inline-block"></span>
           ) : (
-            "Detect Disease"
+            'Detect Disease'
           )}
         </button>
-        {disease && <p className="mt-4 text-lg font-medium text-center">Result: {disease}</p>}
+        {disease && (
+          <p className="mt-4 text-lg font-medium text-center">
+            Result: {disease}
+          </p>
+        )}
       </div>
     </div>
   );
