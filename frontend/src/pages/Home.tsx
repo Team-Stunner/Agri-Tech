@@ -91,17 +91,17 @@ function Home() {
       {/* How It Works Section */}
       <div className="bg-green-50 py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-green-700 mb-12">
+          <h2 className="text-3xl font-bold text-center text-black mb-12">
             How It Works
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <img 
-                src="https://images.unsplash.com/photo-1591643528433-88f32c2cdc50?auto=format&fit=crop&q=80&w=400" 
+                src="https://images.unsplash.com/photo-1555815947-880cc64d6edd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
                 alt="Take photo" 
                 className="w-full h-48 object-cover rounded-lg mb-4 card-shadow"
               />
-              <h3 className="text-xl font-semibold mb-2">1. Take a Photo</h3>
+              <h3 className="text-xl text-black font-semibold mb-2">1. Take a Photo</h3>
               <p className="text-gray-600">Capture clear images of affected crop areas</p>
             </div>
             <div className="text-center">
@@ -110,7 +110,7 @@ function Home() {
                 alt="AI Analysis" 
                 className="w-full h-48 object-cover rounded-lg mb-4 card-shadow"
               />
-              <h3 className="text-xl font-semibold mb-2">2. AI Analysis</h3>
+              <h3 className="text-xl text-black font-semibold mb-2">2. AI Analysis</h3>
               <p className="text-gray-600">Our AI model analyzes the image instantly</p>
             </div>
             <div className="text-center">
@@ -119,7 +119,7 @@ function Home() {
                 alt="Get Results" 
                 className="w-full h-48 object-cover rounded-lg mb-4 card-shadow"
               />
-              <h3 className="text-xl font-semibold mb-2">3. Get Results</h3>
+              <h3 className="text-xl text-black font-semibold mb-2">3. Get Results</h3>
               <p className="text-gray-600">Receive detailed analysis and treatment recommendations</p>
             </div>
           </div>
