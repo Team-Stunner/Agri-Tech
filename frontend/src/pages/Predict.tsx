@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 function Predict() {
-  const GEMINI_API_KEY = 'AIzaSyDRUX_Dy1rJiJwviR5psPc78k8eZKCfSo8'; // Replace with your API Key
+  const GEMINI_API_KEY ='AIzaSyDRUX_Dy1rJiJwviR5psPc78k8eZKCfSo8';
+
+  
+
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
   const [image, setImage] = useState(null);

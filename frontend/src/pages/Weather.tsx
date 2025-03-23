@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { REACT_APP_WEATHER_API } from "../data/envs"
 
 interface WeatherData {
   city: string;
@@ -16,7 +17,9 @@ function Weather() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const WEATHER_API_KEY = '96208e3aa15749d6921192747252303';
+  // const WEATHER_API_KEY = `${import.meta.env.REACT_APP_WEATHER_API}`;
+  const WEATHER_API_KEY = '96208e3aa15749d6921192747252303'
+  console.log(WEATHER_API_KEY)
 
   const fetchWeather = async () => {
     if (!city.trim()) {
