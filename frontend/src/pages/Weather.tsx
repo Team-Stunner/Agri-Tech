@@ -73,7 +73,7 @@ function Weather() {
             placeholder="Enter city name..."
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-300"
+            className="flex-1 text-black p-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all duration-300"
           />
           <button
             type="submit"
@@ -109,18 +109,18 @@ function Weather() {
               className="w-20 h-20"
             />
           </div>
-          <h2 className="text-2xl font-semibold text-center mb-4">{weatherData.city}</h2>
+          <h2 className="text-2xl text-black font-semibold text-center mb-4">{weatherData.city}</h2>
           <div className="space-y-2">
-            <p className="text-4xl font-bold text-center mb-4">{weatherData.temperature}°C</p>
+            <p className="text-4xl font-bold text-black text-center mb-4">{weatherData.temperature}°C</p>
             <p className="text-gray-600 text-center capitalize">{weatherData.condition}</p>
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="text-center">
                 <p className="text-gray-500">Humidity</p>
-                <p className="text-xl font-semibold">{weatherData.humidity}%</p>
+                <p className="text-xl text-black font-semibold">{weatherData.humidity}%</p>
               </div>
               <div className="text-center">
                 <p className="text-gray-500">Wind Speed</p>
-                <p className="text-xl font-semibold">{weatherData.windSpeed} km/h</p>
+                <p className="text-xl text-black font-semibold">{weatherData.windSpeed} km/h</p>
               </div>
             </div>
           </div>

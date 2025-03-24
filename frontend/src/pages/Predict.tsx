@@ -66,7 +66,7 @@ function Predict() {
   return (
     <div className="flex flex-col items-center justify-center  min-h-screen p-4 bg-grey-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-4 text-center">
+        <h2 className="text-xl text-black font-semibold mb-4 text-center">
           Plant Disease Detection
         </h2>
         <input
@@ -88,13 +88,13 @@ function Predict() {
           className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
         >
           {loading ? (
-            <span className="animate-spin border-t-2 border-white rounded-full w-5 h-5 inline-block"></span>
+            <span className="animate-spin text-black border-t-2 border-white rounded-full w-5 h-5 inline-block"></span>
           ) : (
             'Detect Disease'
           )}
         </button>
         {disease && (
-          <p className="mt-4 text-lg font-medium text-center">
+          <p className="mt-4 text-red-700 text-lg font-medium text-center">
             Result: {disease}
           </p>
         )}
