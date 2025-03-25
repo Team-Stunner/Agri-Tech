@@ -17,7 +17,7 @@ function Weather() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // const WEATHER_API_KEY = `${import.meta.env.REACT_APP_WEATHER_API}`;
+  // const WEATHER_API_KEY = {process.env.REACT_APP_WEATHER_API};
   const WEATHER_API_KEY = '96208e3aa15749d6921192747252303'
   console.log(WEATHER_API_KEY)
 

@@ -20,6 +20,12 @@ function Navbar() {
             <Link to="/weather" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Weather
             </Link>
+            <Link to="/voice-support" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+              Voice Support
+            </Link>
+            <Link to="/nearby-centers" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+              Krushi Seva Kendra
+            </Link>
           </div>
         </div>
       </div>
