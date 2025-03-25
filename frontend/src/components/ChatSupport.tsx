@@ -33,7 +33,7 @@ function ChatSupport() {
         try {
             const response = await axios.post('http://localhost:3000/api/chat', {
                 message: userMessage,
-                language: selectedLanguage === 'en' ? 'English' : languages.find(l => l.code === selectedLanguage)?.name,
+                language: selectedLanguage, // Send language code directly
             });
 
             setMessages(prev => [...prev, { text: response.data.response, isUser: false }]);
@@ -107,9 +107,9 @@ function ChatSupport() {
                                 type="text"
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSend()} // Updated to onKeyDown
                                 placeholder="Ask about farming or crop diseases..."
-                                className="flex-1 text-black border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                className="flex-1 text-gray-700 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
                             <button
                                 onClick={handleSend}
