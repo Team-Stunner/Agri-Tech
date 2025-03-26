@@ -60,8 +60,6 @@ app.post('/api/chat', async (req, res) => {
         const result = await model.generateContent(prompt);
         const response = await result.response.text();
 
-        // If the response is in English and the requested language is different,
-        // translate the response
         let finalResponse = response;
         if (language !== 'en' && !['hi', 'mr', 'gu', 'pa'].includes(language)) {
             try {
@@ -88,7 +86,6 @@ app.post('/api/chat', async (req, res) => {
 app.post('/api/voice-chat', async (req, res) => {
     try {
         const { message, language } = req.body;
-
         const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
         // Enhanced prompt for voice interactions

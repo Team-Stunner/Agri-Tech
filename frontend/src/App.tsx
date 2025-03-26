@@ -6,7 +6,7 @@ import Predict from './pages/Predict';
 import Predict2 from './pages/Predict2';
 import Weather from './pages/Weather';
 import NearbyCenters from './pages/NearbyCenters';
-import VoiceSupport from './pages/VoiceSupport';
+import VoiceChat from './pages/VoiceChat';
 import ChatSupport from './components/ChatSupport';
 import CropRecommendation from './pages/CropRecommendation';
 
@@ -22,7 +22,7 @@ function App() {
             <Route path="/predict2" element={<Predict2 />} />
             <Route path="/crop-recommendation" element={<CropRecommendation />} />
             <Route path="/weather" element={<Weather />} />
-            <Route path="/voice-support" element={<VoiceSupport />} />
+            <Route path="/voice-chat" element={<VoiceChat />} />
             <Route path="/nearby-centers" element={<NearbyCenters />} />
           </Routes>
         </main>

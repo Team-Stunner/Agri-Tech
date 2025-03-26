@@ -3,7 +3,6 @@ import numpy as np
 import joblib
 import os
 import google.generativeai as genai
-from dotenv import load_dotenv
 
 from flask_cors import CORS
 # 🚀 Initialize Flask
@@ -99,6 +98,6 @@ def predict_crop():
     except Exception as e:
         return jsonify({"error": "Something went wrong. Please try again later."}), 500
 
-# 🟢 Run Flask on port 5001
+
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

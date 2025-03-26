@@ -31,7 +31,7 @@ function ChatSupport() {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/chat', {
+            const response = await axios.post('http://localhost:5000/api/chat', {
                 message: userMessage,
                 language: selectedLanguage, // Send language code directly
             });

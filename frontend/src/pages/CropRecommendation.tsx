@@ -37,7 +37,7 @@ function CropRecommendation() {
         setError(null);
 
         try {
-            const res = await axios.post('http://localhost:5001/predict', form);  // Change `/predict-crop` to `/predict`
+            const res = await axios.post('http://localhost:5000/predict1', form);  // Change `/predict-crop` to `/predict`
 
             setResult(res.data);
         } catch (err) {
