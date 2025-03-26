@@ -24,7 +24,35 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.gray.900'),
+            maxWidth: '65ch',
+            h1: {
+              color: theme('colors.green.800'),
+            },
+            h2: {
+              color: theme('colors.green.700'),
+            },
+            h3: {
+              color: theme('colors.green.600'),
+            },
+            strong: {
+              color: theme('colors.green.700'),
+            },
+            a: {
+              color: theme('colors.green.600'),
+              '&:hover': {
+                color: theme('colors.green.800'),
+              },
+            },
+          },
+        },
+      }),
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }

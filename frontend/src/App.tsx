@@ -3,10 +3,12 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Predict from './pages/Predict';
+import Predict2 from './pages/Predict2';
 import Weather from './pages/Weather';
 import NearbyCenters from './pages/NearbyCenters';
 import VoiceSupport from './pages/VoiceSupport';
 import ChatSupport from './components/ChatSupport';
+import CropRecommendation from './pages/CropRecommendation';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/predict" element={<Predict />} />
+            <Route path="/predict2" element={<Predict2 />} />
+            <Route path="/crop-recommendation" element={<CropRecommendation />} />
             <Route path="/weather" element={<Weather />} />
             <Route path="/voice-support" element={<VoiceSupport />} />
             <Route path="/nearby-centers" element={<NearbyCenters />} />
@@ -29,4 +33,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

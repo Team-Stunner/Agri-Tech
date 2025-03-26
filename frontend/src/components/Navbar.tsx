@@ -17,6 +17,12 @@ function Navbar() {
             <Link to="/predict" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Disease Detection
             </Link>
+            <Link to="/predict2" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+              Disease Detection 2
+            </Link>
+            <Link to="/crop-recommendation" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+              Crop Recommendation
+            </Link>
             <Link to="/weather" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Weather
             </Link>
