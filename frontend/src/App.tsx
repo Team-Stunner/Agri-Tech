@@ -9,6 +9,7 @@ import NearbyCenters from './pages/NearbyCenters';
 import VoiceChat from './pages/VoiceChat';
 import ChatSupport from './components/ChatSupport';
 import CropRecommendation from './pages/CropRecommendation';
+import AnimalDetection from './pages/AnimalDetection';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/weather" element={<Weather />} />
             <Route path="/voice-chat" element={<VoiceChat />} />
             <Route path="/nearby-centers" element={<NearbyCenters />} />
+            <Route path="/animal-detection" element={<AnimalDetection />} />
           </Routes>
         </main>
         <ChatSupport />

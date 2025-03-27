@@ -1,107 +1,96 @@
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, request, jsonify
 import google.generativeai as genai
 from googletrans import Translator
 import os
-import datetime
 import re
 import asyncio
 import edge_tts
 import traceback
+import uuid
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173"])
-
-
-# ✅ Configure Gemini API
+# 🌐 Gemini API Key
 genai.configure(api_key="AIzaSyDdxIKxdaAHvXj1NvFG3Of7a-6IVbf4XK4")
 
-# ✅ Setup Flask App
-app = Flask(__name__, static_folder='static')
+# Flask App
+app = Flask(__name__)
+CORS(app)
+
+# Static directory for audio
 os.makedirs("static", exist_ok=True)
 
-# ✅ TTS Voice Mapping
+# Language-to-voice map
 VOICE_MAP = {
     "en": "en-US-JennyNeural",
     "hi": "hi-IN-SwaraNeural",
     "mr": "mr-IN-SapnaNeural"
 }
 
-# ✅ Clean TTS Text
+# Text cleaner for TTS
 def clean_text_for_tts(text):
-    text = re.sub(r'[^\w\sऀ-ॿ.,!?]', '', text)
-    return text.strip()
+    return re.sub(r'[^\w\sऀ-ॿ.,!?]', '', text).strip()
 
-# ✅ Edge TTS Synthesis
-async def speak(text, lang_code):
-    voice = VOICE_MAP.get(lang_code, "en-US-JennyNeural")
-    communicate = edge_tts.Communicate(text=text, voice=voice)
-    await communicate.save("static/output.mp3")
-
-# ✅ Chatbot API Route
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.get_json()
-    query = data.get("query", "").strip()
-    lang = data.get("lang", "en")
-
+# 🔊 Process everything async (TTS + Translation + Gemini)
+async def process_query(query, lang):
     try:
-        if len(query) < 3:
-            return jsonify({"translated": "Please ask a more specific crop-related question.", "full": ""})
-
-        print("🧑‍🌾 Q:", query)
-        print("🌐 Language:", lang)
-
-        # 🔍 Gemini Generation
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(f"Answer this crop-related question simply and briefly for farmers: {query}")
+        model12 = genai.GenerativeModel("gemini-1.5-flash")
+        response = model12.generate_content(f"Answer this crop-related question simply and briefly for farmers: {query}")
         full_answer = response.text.strip()
         short_answer = '.'.join(full_answer.split('.')[:3]) + '.'
-        print("📘 Gemini Answer:", full_answer)
 
-        # 🌐 Translate
+        # Translate
         translator = Translator()
-        translated = translator.translate(short_answer, dest=lang).text
-        print("✅ Translated:", translated)
+        translated_text = await translator.translate(short_answer, dest=lang)
+        translated = translated_text.text
 
-        # 🔊 Generate Speech
+        # Unique filename
+        filename = f"output_{uuid.uuid4().hex[:8]}.mp3"
+        filepath = os.path.join("static", filename)
+
+        # TTS
         cleaned_text = clean_text_for_tts(translated)
-
         try:
-            asyncio.run(speak(cleaned_text, lang))
-        except Exception as e:
-            print("⚠️ TTS failed on full input, retrying...")
-            try:
-                fallback_text = cleaned_text.split('.')[0] + '.'
-                asyncio.run(speak(fallback_text, lang))
-            except Exception as final_err:
-                print("❌ Final TTS error:", final_err)
-                translated += " (Voice generation failed.)"
+            communicate = edge_tts.Communicate(text=cleaned_text, voice=VOICE_MAP.get(lang, "en-US-JennyNeural"))
+            await communicate.save(filepath)
+        except Exception:
+            fallback = cleaned_text.split('.')[0] + '.'
+            communicate = edge_tts.Communicate(text=fallback, voice=VOICE_MAP.get(lang, "en-US-JennyNeural"))
+            await communicate.save(filepath)
+            translated += " (Partial audio generated.)"
 
-        # 📝 Log
-        with open("conversation_log.txt", "a", encoding="utf-8") as log:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            log.write(f"[{timestamp}] Q: {query}\nA: {translated}\n\n")
-
-        return jsonify({
+        return {
             "translated": translated,
-            "full": full_answer
-        })
+            "full": full_answer,
+            "filename": filename
+        }
 
     except Exception as e:
         print("❌ Error:", e)
         traceback.print_exc()
-        return jsonify({"translated": "Something went wrong. Please try again.", "full": ""})
+        return {
+            "translated": "Something went wrong. Please try again.",
+            "full": "",
+            "filename": ""
+        }
 
-# ✅ Serve fresh audio with no caching
-@app.route("/static/output.mp3")
-def serve_audio():
-    response = make_response(send_from_directory("static", "output.mp3"))
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    return response
+# 🎯 Flask route
+@app.route("/ask", methods=["POST"])
+def ask():
+    try:
+        data = request.get_json()
+        query = data.get("query", "").strip()
+        lang = data.get("lang", "en")
 
-# ✅ Run Flask server
+        if len(query) < 3:
+            return jsonify({"translated": "Please ask a more specific crop-related question.", "full": "", "filename": ""})
+
+        result = asyncio.run(process_query(query, lang))
+        return jsonify(result)
+
+    except Exception as e:
+        print("❌ Flask error:", e)
+        traceback.print_exc()
+        return jsonify({"translated": "Internal server error.", "full": "", "filename": ""})
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True)

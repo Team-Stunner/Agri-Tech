@@ -7,22 +7,22 @@ function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="text-2xl font-bold text-green-400 hover-scale">
-              CropGuard AI
+              Smart Kisan
             </Link>
           </div>
           <div className="flex items-center space-x-8">
             <Link to="/" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Home
             </Link>
-            <Link to="/predict" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+            {/* <Link to="/predict" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Disease Detection
-            </Link>
+            </Link> */}
             <Link to="/predict2" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
-              Disease Detection 2
+              Disease Detection 
             </Link>
-            <Link to="/crop-recommendation" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+            {/* <Link to="/crop-recommendation" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Crop Recommendation
-            </Link>
+            </Link> */}
             <Link to="/weather" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Weather
             </Link>
@@ -31,6 +31,9 @@ function Navbar() {
             </Link>
             <Link to="/nearby-centers" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Krushi Seva Kendra
+            </Link>
+            <Link to="/animal-detection" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+              Animal Detection
             </Link>
           </div>
         </div>

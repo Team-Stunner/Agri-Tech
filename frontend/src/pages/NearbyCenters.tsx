@@ -40,26 +40,28 @@ function NearbyCenters() {
 
     const fetchNearbyCenters = async (latitude: number, longitude: number) => {
         try {
-            // This is mock data - replace with actual API call
+            // Mock Data: Replace with actual API call if needed
             const mockCenters: Center[] = [
                 {
-                    name: 'Krushi Seva Kendra - Pune',
-                    distance: '2.5 km',
-                    address: '123 Farming Road, Pune',
+                    name: 'Kastakar Krushi Seva Kendra, Mumbai',
+                    distance: '1.0 km',
+                    address: 'Wellness center - Shop No 1',
                     position: { lat: latitude + 0.01, lng: longitude + 0.01 }
                 },
                 {
-                    name: 'Agricultural Center',
-                    distance: '3.8 km',
-                    address: '456 Rural Street, Pune',
+                    name: 'Gargi Krushi Seva Kendra, Mumbai',
+                    distance: '2.0 km',
+                    address: 'Agrochemicals Supplier - Hiba Apartment',
                     position: { lat: latitude - 0.01, lng: longitude - 0.01 }
                 },
                 {
-                    name: 'Farmers Support Center',
-                    distance: '4.2 km',
-                    address: '789 Green Avenue, Pune',
+                    name: 'Patil Krushi Seva Kendra, Thane',
+                    distance: '5.0 km',
+                    address: 'Agricultural Service - Near Station',
                     position: { lat: latitude + 0.02, lng: longitude - 0.02 }
-                }
+                },
+                
+                // Add more centers as required
             ];
 
             setCenters(mockCenters);
@@ -96,6 +98,7 @@ function NearbyCenters() {
 
             {!loading && !error && userLocation && (
                 <div className="grid md:grid-cols-2 gap-8">
+                    {/* List of Centers */}
                     <div className="bg-white rounded-lg shadow-lg p-6">
                         <h2 className="text-xl font-semibold mb-4 text-gray-800">Available Centers</h2>
                         <div className="space-y-4">
@@ -109,31 +112,20 @@ function NearbyCenters() {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                        <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-                            <GoogleMap
-                                mapContainerStyle={mapContainerStyle}
-                                center={userLocation}
-                                zoom={13}
-                            >
-                                {/* User location marker */}
-                                <Marker
-                                    position={userLocation}
-                                    icon={{
-                                        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                                    }}
-                                />
+                    {/* Google Map with Markers */}
+                   
 
-                                {/* Center markers */}
-                                {centers.map((center, index) => (
-                                    <Marker
-                                        key={index}
-                                        position={center.position}
-                                        title={center.name}
-                                    />
-                                ))}
-                            </GoogleMap>
-                        </LoadScript>
+                    {/* Embedded Google Maps Iframe */}
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d241328.2662490231!2d72.75501784882336!3d19.074543513342565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1skrushi%20seva%20kendra%20near%20me!5e0!3m2!1sen!2sin!4v1743062476045!5m2!1sen!2sin"
+                            width="100%"
+                            height="400"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        ></iframe>
                     </div>
                 </div>
             )}

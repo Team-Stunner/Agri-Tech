@@ -1,247 +1,129 @@
-import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import { IoMic, IoMicOff, IoSend, IoVolumeHigh } from 'react-icons/io5';
-
-const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'hi', name: 'हिंदी' },
-    { code: 'mr', name: 'मराठी' }
-];
+import React, { useState, useRef } from "react";
 
 const VoiceChat = () => {
-    const [query, setQuery] = useState('');
-    const [response, setResponse] = useState('');
-    const [fullAnswer, setFullAnswer] = useState('');
-    const [selectedLang, setSelectedLang] = useState('en');
+    const [question, setQuestion] = useState("");
+    const [lang, setLang] = useState("en");
+    const [translated, setTranslated] = useState("");
+    const [fullAnswer, setFullAnswer] = useState("");
+    const [audioFilename, setAudioFilename] = useState("");
+    const [timestamp, setTimestamp] = useState(Date.now());
     const [loading, setLoading] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [error, setError] = useState('');
-    const [audioReady, setAudioReady] = useState(false);
+    const audioRef = useRef(null);
+    let recognition;
 
-    const recognitionRef = useRef<any>(null);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const startListening = () => {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-IN";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.start();
 
-    useEffect(() => {
-        // Initialize SpeechRecognition
-        const SpeechRecognition =
-            (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        setQuestion("🎤 Listening...");
+        setTranslated("");
+        setFullAnswer("");
 
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.lang = selectedLang === 'en' ? 'en-US' : `${selectedLang}-IN`;
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
+        recognition.onresult = (event) => {
+            const query = event.results[0][0].transcript;
+            setQuestion("You asked: " + query);
+            setLoading(true);
 
-            recognition.onresult = (event: SpeechRecognitionEvent) => {
-                const spokenText = event.results[0][0].transcript;
-                setQuery(spokenText);
-                handleAsk(spokenText); // Auto submit on voice input
-            };
-
-            recognition.onend = () => setIsListening(false);
-            recognition.onerror = (e: any) => {
-                console.error('Recognition error:', e);
-                setError('Failed to recognize speech. Please try again.');
-                setIsListening(false);
-            };
-
-            recognitionRef.current = recognition;
-        }
-
-        // Initialize audio element
-        audioRef.current = new Audio();
-        audioRef.current.oncanplay = () => setAudioReady(true);
-        audioRef.current.onerror = () => {
-            setAudioReady(false);
-            setError('Failed to load audio response.');
+            fetch("http://localhost:5000/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query, lang }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setTranslated(data.translated);
+                    setFullAnswer(data.full);
+                    setAudioFilename(data.filename);
+                    setTimestamp(Date.now());
+                    setLoading(false);
+                    if (audioRef.current) {
+                        audioRef.current.style.display = "block";
+                        audioRef.current.load();
+                    }
+                })
+                .catch((err) => {
+                    console.error("❌ API error:", err);
+                    setTranslated("Something went wrong. Please try again.");
+                    setLoading(false);
+                });
         };
 
-        return () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.oncanplay = null;
-                audioRef.current.onerror = null;
-                audioRef.current = null;
-            }
+        recognition.onerror = (event) => {
+            alert("Speech recognition error: " + event.error);
         };
-    }, [selectedLang]);
+    };
 
-    const handleStartListening = () => {
-        if (recognitionRef.current) {
-            setError('');
-            setIsListening(true);
-            recognitionRef.current.start();
-        } else {
-            setError('Speech recognition is not supported in your browser.');
+    const playAnswer = () => {
+        if (audioRef.current) {
+            audioRef.current.play();
         }
     };
 
-    const handleStopListening = () => {
-        if (recognitionRef.current) {
-            recognitionRef.current.stop();
-            setIsListening(false);
+    const stopAudio = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
         }
     };
 
-    const playAudio = async () => {
-        try {
-            if (!audioRef.current) {
-                audioRef.current = new Audio();
-                audioRef.current.oncanplay = () => setAudioReady(true);
-                audioRef.current.onerror = () => {
-                    setAudioReady(false);
-                    setError('Failed to load audio response.');
-                };
-            }
-
-            // Add timestamp to prevent caching
-            const audioUrl = `http://localhost:5000/static/output.mp3?t=${Date.now()}`;
-
-            // Set new source and load it
-            audioRef.current.src = audioUrl;
-            await audioRef.current.load();
-
-            // Play when ready
-            if (audioReady) {
-                await audioRef.current.play();
-            }
-        } catch (err) {
-            console.error('Audio playback error:', err);
-            setError('Failed to play audio response. Please try again.');
-        }
-    };
-
-    const handleAsk = async (incomingQuery = query) => {
-        if (!incomingQuery.trim()) {
-            setError('Please enter or speak a question.');
-            return;
-        }
-
-        setLoading(true);
-        setError('');
-        setResponse('');
-        setFullAnswer('');
-        setAudioReady(false);
-
-        try {
-            const res = await axios.post('http://localhost:5000/ask', {
-                query: incomingQuery,
-                lang: selectedLang
-            });
-
-            setResponse(res.data.translated);
-            setFullAnswer(res.data.full);
-
-            // Wait a brief moment to ensure the audio file is generated
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            // Auto play the voice response
-            await playAudio();
-        } catch (err) {
-            console.error('Error:', err);
-            setError('Failed to get a response. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const audioUrl = audioFilename ? `http://localhost:5000/static/${audioFilename}?t=${timestamp}` : "";
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4">
-            <div className="max-w-2xl mx-auto bg-white shadow-xl rounded-xl p-6 space-y-6">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-green-700 mb-2">
-                        🧑‍🌾 Krushi Seva Voice Assistant
-                    </h2>
-                    <p className="text-gray-600">Ask questions about farming in your language</p>
-                </div>
+        <div className="container py-5 text-gray-700">
+            <h2 className="text-center text-success mb-4">🌱 Krushi Seva Assistant</h2>
 
-                <div className="space-y-4">
-                    <select
-                        value={selectedLang}
-                        onChange={(e) => setSelectedLang(e.target.value)}
-                        className="w-full p-3 border rounded-lg text-gray-700 focus:ring-2 focus:ring-green-500"
-                    >
-                        {languages.map((lang) => (
-                            <option key={lang.code} value={lang.code}>
-                                {lang.name}
-                            </option>
-                        ))}
-                    </select>
+            <div className="mb-3 text-center">
+                <label htmlFor="langSelect" className="form-label">Select Language:</label>
+                <select
+                    id="langSelect"
+                    className="form-select w-auto d-inline-block"
+                    value={lang}
+                    onChange={(e) => setLang(e.target.value)}
+                >
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="mr">Marathi</option>
+                </select>
+            </div>
 
-                    <div className="relative">
-                        <textarea
-                            rows={3}
-                            placeholder="Ask a crop-related question..."
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            className="w-full p-4 text-gray-700 border rounded-lg resize-none focus:ring-2 focus:ring-green-500"
-                        />
+            <div className="text-center mb-4">
+                <button className="btn btn-primary mic-btn me-2" onClick={startListening}>🎤 Ask Question</button>
+                <button className="btn btn-success mic-btn me-2" onClick={playAnswer}>🔊 Play Answer</button>
+                <button className="btn btn-danger mic-btn" onClick={stopAudio}>⏹️ Stop Audio</button>
+            </div>
+
+            <div className="text-center">
+                <p className="text-muted">{question}</p>
+                {loading && <p className="text-info">⏳ Generating answer...</p>}
+            </div>
+
+            <div className="response-box mt-4">
+                <h5>System Response:</h5>
+                <div className="card">
+                    <div className="card-body">
+                        <p><strong>Full Answer:</strong> <span>{fullAnswer}</span></p>
+                        <p><strong>Translated:</strong> <span>{translated}</span></p>
                     </div>
-
-                    <div className="flex space-x-4">
-                        <button
-                            onClick={() => handleAsk()}
-                            disabled={loading}
-                            className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2 disabled:opacity-50"
-                        >
-                            <IoSend className="text-xl" />
-                            <span>{loading ? 'Processing...' : 'Ask'}</span>
-                        </button>
-
-                        {isListening ? (
-                            <button
-                                onClick={handleStopListening}
-                                className="flex-1 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2"
-                            >
-                                <IoMicOff className="text-xl" />
-                                <span>Stop</span>
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleStartListening}
-                                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center justify-center space-x-2"
-                            >
-                                <IoMic className="text-xl" />
-                                <span>Speak</span>
-                            </button>
-                        )}
-                    </div>
-
-                    {error && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-                            <p className="text-red-700">{error}</p>
-                        </div>
-                    )}
-
-                    {response && (
-                        <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-800">Response:</h3>
-                                <button
-                                    onClick={playAudio}
-                                    disabled={!audioReady}
-                                    className={`text-green-600 hover:text-green-700 p-2 ${!audioReady && 'opacity-50 cursor-not-allowed'}`}
-                                    title={audioReady ? "Play audio" : "Audio loading..."}
-                                >
-                                    <IoVolumeHigh className="text-xl" />
-                                </button>
-                            </div>
-                            <p className="text-gray-700">{response}</p>
-
-                            {fullAnswer && (
-                                <details className="mt-4">
-                                    <summary className="text-green-600 hover:text-green-700 cursor-pointer">
-                                        Show detailed explanation
-                                    </summary>
-                                    <p className="mt-2 text-gray-600 bg-white p-4 rounded-lg">
-                                        {fullAnswer}
-                                    </p>
-                                </details>
-                            )}
-                        </div>
-                    )}
                 </div>
+            </div>
+
+            <div className="text-center mt-4">
+                {audioFilename && (
+                    <>
+                        <audio ref={audioRef} controls>
+                            <source src={audioUrl} type="audio/mp3" />
+                            Your browser does not support the audio element.
+                        </audio>
+                        <div className="download-link mt-2">
+                            <a href={audioUrl} download className="btn btn-outline-secondary">
+                                ⬇️ Download Audio
+                            </a>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

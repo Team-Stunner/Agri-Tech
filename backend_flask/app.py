@@ -14,6 +14,13 @@ import asyncio
 import edge_tts
 import traceback
 from googletrans import Translator
+from gtts import gTTS
+import tempfile
+from flask import send_file
+import re  # used in clean_text_for_tts
+import uuid  # used in process_query
+
+
 
 
 app = Flask(__name__)
@@ -337,74 +344,93 @@ Answer in the requested language.
         return jsonify({'error': 'Failed to generate response', 'details': str(e)}), 500
 
 
+os.makedirs("static", exist_ok=True)
+
+# Language-to-voice map
 VOICE_MAP = {
     "en": "en-US-JennyNeural",
     "hi": "hi-IN-SwaraNeural",
     "mr": "mr-IN-SapnaNeural"
 }
 
-
+# Text cleaner for TTS
 def clean_text_for_tts(text):
-    text = re.sub(r'[^\w\sऀ-ॿ.,!?]', '', text)
-    return text.strip()
+    return re.sub(r'[^\w\sऀ-ॿ.,!?]', '', text).strip()
 
-async def speak(text, lang_code):
-    voice = VOICE_MAP.get(lang_code, "en-US-JennyNeural")
-    communicate = edge_tts.Communicate(text=text, voice=voice)
-    await communicate.save("static/output.mp3")
+# 🔊 Process everything async (TTS + Translation + Gemini)
+from deep_translator import GoogleTranslator  # make sure this is imported
 
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.get_json()
-    query = data.get("query", "").strip()
-    lang = data.get("lang", "en")
-
+def process_query(query, lang):
     try:
-        if len(query) < 3:
-            return jsonify({"translated": "Please ask a more specific crop-related question.", "full": ""})
-
-        print("🧑‍🌾 Q:", query)
-        print("🌐 Language:", lang)
-
-        # Generate Gemini response
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(f"Answer this crop-related question simply and briefly for farmers: {query}")
         full_answer = response.text.strip()
         short_answer = '.'.join(full_answer.split('.')[:3]) + '.'
-        print("📘 Gemini Answer:", full_answer)
 
-        # Translate
-        translator = Translator()
-        translated = translator.translate(short_answer, dest=lang).text
-        print("✅ Translated:", translated)
+        # ✅ Translate using deep_translator
+        try:
+            translated = GoogleTranslator(source='auto', target=lang).translate(short_answer)
+        except Exception as e:
+            print("Translation failed:", e)
+            translated = short_answer + " (Translation unavailable)"
 
-        # Clean & Speak with retry
+        # ✅ Unique filename
+        filename = f"output_{uuid.uuid4().hex[:8]}.mp3"
+        filepath = os.path.join("static", filename)
+
+        # ✅ Text-to-Speech with edge-tts
         cleaned_text = clean_text_for_tts(translated)
         try:
-            asyncio.run(speak(cleaned_text, lang))
+            communicate = edge_tts.Communicate(text=cleaned_text, voice=VOICE_MAP.get(lang, "en-US-JennyNeural"))
+            asyncio.run(communicate.save(filepath))
         except Exception as e:
-            print("⚠️ TTS failed on full input, retrying with fallback...")
-            fallback_text = cleaned_text.split('.')[0] + '.'
+            print("TTS failed, trying fallback:", e)
+            fallback = cleaned_text.split('.')[0] + '.'
             try:
-                asyncio.run(speak(fallback_text, lang))
+                communicate = edge_tts.Communicate(text=fallback, voice=VOICE_MAP.get(lang, "en-US-JennyNeural"))
+                asyncio.run(communicate.save(filepath))
             except Exception as final_err:
-                print("❌ Final TTS failure:", final_err)
-                translated += " (But voice could not be generated.)"
+                print("❌ TTS fallback failed:", final_err)
+                translated += " (Audio unavailable)"
 
-        # Log
-        with open("conversation_log.txt", "a", encoding="utf-8") as log:
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            log.write(f"[{timestamp}] Q: {query}\nA: {translated}\n\n")
-
-        return jsonify({
+        return {
             "translated": translated,
-            "full": full_answer
-        })
+            "full": full_answer,
+            "filename": filename
+        }
 
     except Exception as e:
-        print("❌ Error:", e)
+        print("❌ Error in process_query:", e)
         traceback.print_exc()
-        return jsonify({"translated": "Something went wrong. Please try again.", "full": ""})
+        return {
+            "translated": "Something went wrong.",
+            "full": "",
+            "filename": ""
+        }
+
+
+# 🎯 Flask route
+@app.route("/ask", methods=["POST"])
+def ask():
+    try:
+        data = request.get_json()
+        query = data.get("query", "").strip()
+        lang = data.get("lang", "en")
+
+        if len(query) < 3:
+            return jsonify({"translated": "Please ask a more specific crop-related question.", "full": "", "filename": ""})
+
+        result = process_query(query, lang)
+        return jsonify(result)
+
+    except Exception as e:
+        print("❌ Flask error:", e)
+        traceback.print_exc()
+        return jsonify({"translated": "Internal server error.", "full": "", "filename": ""})
+
+
+
+
 
 # ✅ Start the server
 if __name__ == "__main__":
