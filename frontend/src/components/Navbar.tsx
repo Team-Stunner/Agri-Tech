@@ -7,7 +7,7 @@ function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="text-2xl font-bold text-green-400 hover-scale">
-              Smart Kisan
+              AgriShield 
             </Link>
           </div>
           <div className="flex items-center space-x-8">
@@ -33,7 +33,7 @@ function Navbar() {
               Krushi Seva Kendra
             </Link>
             <Link to="/animal-detection" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
-              Animal Detection
+              Animal & Fire Detection
             </Link>
           </div>
         </div>

@@ -44,7 +44,7 @@ function NearbyCenters() {
             const mockCenters: Center[] = [
                 {
                     name: 'Kastakar Krushi Seva Kendra, Mumbai',
-                    distance: '1.0 km',
+                    distance: '15.5 km',
                     address: 'Wellness center - Shop No 1',
                     position: { lat: latitude + 0.01, lng: longitude + 0.01 }
                 },

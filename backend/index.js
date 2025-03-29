@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 3000;
 app.get('/api/detected-animals', async (req, res) => {
     try {
         const resources = await cloudinary.api.resources({
-            type: 'upload',
+            type: 'upload', 
             prefix: '',
             max_results: 30, // Limit results as needed
         });

@@ -51,10 +51,10 @@ function AnimalDetection() {
                     className="text-center mb-12"
                 >
                     <h1 className="text-4xl font-bold text-green-800 mb-4">
-                        CCTV Animal Detection
+                        CCTV Animal & Fire Detection
                     </h1>
                     <p className="text-xl text-gray-600">
-                        Monitor and track animals detected by our CCTV system
+                        Monitor and track animals and fire detected by our CCTV system
                     </p>
                 </motion.div>
 

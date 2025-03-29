@@ -363,7 +363,7 @@ from deep_translator import GoogleTranslator  # make sure this is imported
 def process_query(query, lang):
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(f"Answer this crop-related question simply and briefly for farmers: {query}")
+        response = model.generate_content(f"Answer this crop-related or farming related question and briefly in 3-4 lines for farmers (specifically indian farmers): {query}")
         full_answer = response.text.strip()
         short_answer = '.'.join(full_answer.split('.')[:3]) + '.'
 
