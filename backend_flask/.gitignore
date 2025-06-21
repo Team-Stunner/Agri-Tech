@@ -1,2 +1,3 @@
 /model/Plant_Village_detection_Model.h5
 venv/
+*.env
