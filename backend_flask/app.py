@@ -285,7 +285,7 @@ def predict_crop():
 # Chatbot part
 
 
-model2 = genai.GenerativeModel('gemini-2.0-flash')
+model2 = genai.GenerativeModel('gemini-1.5-flash')
 
 language_prompts = {
     'en': 'Respond in English',

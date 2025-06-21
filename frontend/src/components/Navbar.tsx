@@ -23,15 +23,15 @@ function Navbar() {
             {/* <Link to="/crop-recommendation" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Crop Recommendation
             </Link> */}
-            <Link to="/weather" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+            {/* <Link to="/weather" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Weather
-            </Link>
+            </Link> */}
             <Link to="/voice-chat" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Voice Support
             </Link>
-            <Link to="/nearby-centers" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
+            {/* <Link to="/nearby-centers" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Krushi Seva Kendra
-            </Link>
+            </Link> */}
             <Link to="/animal-detection" className="hover:text-green-400 transition-colors hover-scale text-gray-300">
               Animal & Fire Detection
             </Link>

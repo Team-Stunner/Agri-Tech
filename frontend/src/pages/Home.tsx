@@ -106,7 +106,7 @@ function Home() {
                 Start Disease Detection
               </Link>
               <Link
-                to="/voice-support"
+                to="/voice-chat"
                 className="bg-white text-green-600 border-2 border-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-50 transition-all duration-300 hover:scale-105 hover:shadow-lg inline-flex items-center"
               >
                 <FaMicrophone className="mr-2" />

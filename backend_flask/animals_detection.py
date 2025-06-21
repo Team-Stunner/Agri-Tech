@@ -8,9 +8,9 @@ from twilio.rest import Client
 
 # === Twilio Credentials (hardcoded for now — replace with env vars later) ===
 FARM_OWNER_NUMBER = "+91"
-TWILIO_ACCOUNT_SID = "AC61136c14a13ea6750afebe63dc786be3"
-TWILIO_AUTH_TOKEN = "7c369e13e5a83b7779d52e0017570e41"
-TWILIO_PHONE_NUMBER = "+16193617879"
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
 # Twilio Client
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
